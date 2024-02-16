@@ -5,6 +5,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,9 +37,7 @@ Route::delete('/roles/{role}/permissions/{permission}', [PermissionController::c
 Route::delete('/users/{user}/permissions/{permission}', [UserController::class, 'revokePermission'])->name('users.permissions.revoke.permission');
 Route::delete('/users/{user}/roles/{role}', [UserController::class, 'revokeRole'])->name('users.permissions.revoke.role');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', WelcomeController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -51,3 +50,4 @@ Route::middleware(['auth','role:admin'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/satusehat.php';

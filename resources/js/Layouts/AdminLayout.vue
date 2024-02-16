@@ -16,11 +16,15 @@ const showingNavigationDropdown = ref(false);
         <aside
             class="ml-[-100%] fixed z-10 top-0 pb-3 px-6 w-full flex flex-col justify-between h-screen border-r bg-white transition duration-300 md:w-4/12 lg:ml-0 lg:w-[25%] xl:w-[20%] 2xl:w-[15%]">
             <div>
-                <div class="-mx-6 px-6 py-4">
-                    <a href="#" title="home">
+                <div class="-mx-6 px-6 py-4 mx-auto">
+                    <!-- <a href="#" title="home">
                         <img src="https://tailus.io/sources/blocks/stats-cards/preview/images/logo.svg" class="w-32"
                             alt="tailus logo">
-                    </a>
+                    </a> -->
+                    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Admin
+                        </span>
+                    </h1>
                 </div>
 
                 <ul class="space-y-2 tracking-wide mt-8">

@@ -33,7 +33,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Razinal\\Satusehatsync\\": "packages/razinal/satusehatsync/src"
+
         }
     },
     "scripts": {

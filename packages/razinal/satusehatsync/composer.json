@@ -1,0 +1,20 @@
+{
+    "name": "razinal/satusehatsync",
+    "description": "service untuk syncronisasi antara simrs dengan satu sehat kemenkes",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Razinal\\Satusehatsync\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "razinal"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {}
+}
+
