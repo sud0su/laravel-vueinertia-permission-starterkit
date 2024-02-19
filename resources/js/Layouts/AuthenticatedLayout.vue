@@ -10,6 +10,8 @@ import { usePermission } from '@/Composables/permissions';
 
 const showingNavigationDropdown = ref(false);
 const { hasRole } = usePermission();
+
+defineProps(['token'])
 </script>
 
 <template>
@@ -34,8 +36,11 @@ const { hasRole } = usePermission();
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                                <NavLink v-if="hasRole('admin')" :href="route('users.index')" :active="route().current('users.index')">
-                                    Admin
+                                <NavLink v-if="hasRole('admin') && token !== null" :href="route('users.index')" :active="route().current('users.index')">
+                                    Users Access
+                                </NavLink>
+                                <NavLink v-if="hasRole('admin')  && token !== null" :href="route('admin.setting')" :active="route().current('admin.setting')">
+                                    Setting
                                 </NavLink>
                             </div>
                         </div>

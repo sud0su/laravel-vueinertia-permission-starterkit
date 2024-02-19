@@ -11,8 +11,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table(config('satusehatsimrs.token_table_name'), function (Blueprint $table) {
-            $table->unsignedBigInteger('rsklien_id');
-            $table->foreign('rsklien_id')->references('id')->on(config('satusehatsimrs.klien_table_name'))->onDelete('cascade');
+            $table->unsignedBigInteger('rsklien_id')->nullable();
+            $table->foreign('rsklien_id')->references('id')->on(config('satusehatsimrs.klien_table_name'))->nullable()->constrained()->unconstrained();;
         });
     }
 

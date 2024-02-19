@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreatePermissionRequest;
 use App\Http\Resources\PermissionResource;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;

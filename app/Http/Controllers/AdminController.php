@@ -11,4 +11,8 @@ class AdminController extends Controller
     public function index(): Response{
         return Inertia::render('Admin/AdminIndex');
     }
+
+    public function setting(): Response {
+        return Inertia::render('Settings/SettingIndex');
+    }
 }

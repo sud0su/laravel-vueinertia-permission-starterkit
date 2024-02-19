@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::table(config('satusehatsimrs.log_table_name'), function (Blueprint $table) {
             $table->unsignedBigInteger('rsklien_id');
             $table->foreign('rsklien_id')->references('id')->on(config('satusehatsimrs.klien_table_name'))->onDelete('cascade');
+
+            $table->unsignedBigInteger('cron_id');
+            $table->foreign('cron_id')->references('id')->on(config('satusehatsimrs.cron_table_name'))->onDelete('cascade');
         });
     }
 

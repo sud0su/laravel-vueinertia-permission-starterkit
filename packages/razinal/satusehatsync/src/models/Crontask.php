@@ -50,6 +50,6 @@ class Crontask extends Model
 
     public function rsklinik()
     {
-        return $this->belongsTo(Rsklinik::class);
+        return $this->belongsTo(Rsklinik::class, 'rsklien_id', 'id');
     }
 }

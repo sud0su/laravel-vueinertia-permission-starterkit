@@ -87,7 +87,6 @@ class OAuth2Client
                 SatusehatToken::create([
                     'environment' => getenv('SATUSEHAT_ENV'),
                     'token' => $contents->access_token,
-                    'rsklien_id' => '0',
                 ]);
 
                 return $contents->access_token;

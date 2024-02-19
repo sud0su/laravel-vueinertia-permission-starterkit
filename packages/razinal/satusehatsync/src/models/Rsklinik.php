@@ -48,9 +48,9 @@ class Rsklinik extends Model
     ];
 
 
-    public function cronjob()
+    public function crontasks()
     {
-        return $this->hasOne(Crontask::class);
+        return $this->hasMany(Crontask::class, 'rsklien_id', 'id');
     }
 
     public function patients()

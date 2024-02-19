@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::connection(config('satusehatsimrs.database_connection'))->create(config('satusehatsimrs.patient_table_name'), function (Blueprint $table) {
             $table->id();
             $table->string('resourceType');
-            $table->json('identifier')->unique(); // Add unique constraint
+            $table->json('identifier'); // Kolom JSON
+            $table->string('identifier_value')->virtualAs('CAST(JSON_UNQUOTE(JSON_EXTRACT(identifier, "$.your_json_path")) AS CHAR(255))'); // Kolom dihasilkan
             $table->boolean('active');
             $table->json('name');
             $table->json('telecom');
