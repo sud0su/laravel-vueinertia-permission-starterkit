@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Razinal\Satusehatsync\Models\Getdatasync;
 use Razinal\Satusehatsync\Models\SatusehatToken;
 
-class EncounterService extends OAuth2RsClient
+class EncounterService extends RsOAuth2Client
 {
 
     public $encounter = ['resourceType' => 'Encounter'];
@@ -31,7 +31,7 @@ class EncounterService extends OAuth2RsClient
     public function dataTables(Request $request)
     {
         $id = $request->input('id');
-        $cronid = $request->input('tab');
+        $cronid = $request->input('cronid');
         $url = $request->input('endpoint');
         $resourceType = $request->input('resourceType');
         $search = $request->input('search.value');
@@ -76,7 +76,7 @@ class EncounterService extends OAuth2RsClient
         });
 
         // Format flag_text
-        $data->transform(function ($item) {
+        $data->transform(function ($item) use ($resourceType) {
             $item->flag_text = match ($item->flag_text) {
                 'Error' => '<span class="badge bg-danger">Error</span>',
                 'Waiting' => '<span class="badge bg-warning">Waiting</span>',
@@ -84,26 +84,28 @@ class EncounterService extends OAuth2RsClient
                 default => '<span class="badge bg-info">Exist</span>',
             };
 
-            $item->action = '<nobr>
-                                <button class="btn btn-xs btn-default text-teal mx-1 shadow btn-view"
-                                data-toggle="modal" data-target="#jsonitemPreview" title="Details">
-                                <i class="fa fa-lg fa-fw fa-eye"></i>
-                                </button>
-                                </nobr>';
+            $item->action = '<button class="btn btn-xs btn-default text-teal mx-1 shadow btn-view"
+                                onclick="viewJson(' . $item->id . ', \'' . $resourceType . '\')" title="Details">
+                                Json Preview
+                            </button>';
             return $item;
         });
 
         $response = [
-            'data' => $data->map(function ($item) {
+            'data' => $data->map(function ($item, $index) {
+                $createdAt = \Carbon\Carbon::parse($item->created_at);
+                $updatedAt = \Carbon\Carbon::parse($item->updated_at);
+
                 return [
-                    $item->index,
-                    $item->id,
-                    $item->identifier,
-                    $resourceType ?? 'Encounter',
-                    $item->flag_text,
-                    $item->created_at,
-                    $item->updated_at,
-                    $item->action,
+                    'index' => $index + 1,
+                    'id' => $item->id,
+                    'identifier' => $item->identifier,
+                    'resourceType' => $resourceType ?? 'Encounter',
+                    'created_at' => $createdAt->format('l, d-m-Y H:i'),
+                    'updated_at' => $updatedAt->format('l, d-m-Y H:i'),
+                    'flag_text' => $item->flag_text,
+                    'action' => $item->action,
+                    'index' => $item->index,
                 ];
             })->toArray(),
             'draw' => $request->input('draw'),
@@ -114,10 +116,10 @@ class EncounterService extends OAuth2RsClient
         return response()->json($response);
     }
 
-    public function syncData($tabId, $rsid)
+    public function syncData($cronid, $rsid)
     {
         $data = Getdatasync::select(['data', 'id'])
-            ->where('cron_id', $tabId)
+            ->where('cron_id', $cronid)
             ->where(function ($query) {
                 $query->where('flag', 0)
                     ->orWhere('flag', 1);
@@ -135,7 +137,7 @@ class EncounterService extends OAuth2RsClient
 
             $body = json_encode($item->data);
 
-            $result = $this->postData($item->id, $rsid, $body, $tabId);
+            $result = $this->postData($item->id, $rsid, $body, $cronid);
 
             if ($result['success'] == 1) {
                 $responses[] = ['status' => 'success', 'message' => $result['response']];
@@ -145,82 +147,7 @@ class EncounterService extends OAuth2RsClient
         }
     }
 
-
-    // public function postData($dataid, $rsid, $body, $cron_id)
-    // {
-    //     $access_token = SatusehatToken::orderBy('created_at', 'desc')
-    //         ->where('rsklien_id', '=', $rsid)
-    //         ->where('created_at', '>', now()->subMinutes(50))->first();
-
-    //     if (!isset($access_token->token)) {
-    //         return 'Error, not authenticated';
-    //     }
-
-    //     $client = new Client();
-    //     $headers = [
-    //         'Content-Type' => 'application/json',
-    //         'Authorization' => 'Bearer ' . $access_token->token,
-    //     ];
-
-    //     $url = $this->base_url . '/Encounter';
-    //     $request = new Psr7Request('POST', $url, $headers, $body);
-
-    //     try {
-    //         $res = $client->sendAsync($request)->wait();
-
-    //         $statusCode = $res->getStatusCode();
-    //         $response = json_decode($res->getBody()->getContents());
-
-    //         if ($response->resourceType == 'OperationOutcome' || $statusCode >= 400) {
-    //             $id = 'Error ' . $statusCode;
-    //             $result = ['error' => 2, 'success' => 0, 'statusCode' => $statusCode, 'response' => $response];
-    //         } else {
-    //             $id = $response->id;
-
-    //             $patient = Getdatasync::find($dataid);
-    //             if ($patient) {
-    //                 $patient->flag = 2;
-    //                 $patient->save();
-    //             }
-
-    //             $result = ['success' => 1, 'error' => 0, 'id' => $id, 'statusCode' => $statusCode, 'response' => $response];
-    //         }
-
-    //         $this->log($id, 'POST', $url, (array)$body, (array)$response, $rsid, $cron_id);
-
-    //         return $result;
-    //     } catch (ClientException $e) {
-    //         $statusCode = $e->getResponse()->getStatusCode();
-    //         $res = json_decode($e->getResponse()->getBody()->getContents());
-
-    //         $dtcheck = Getdatasync::find($dataid);
-
-    //         if ($res && isset($res->issue)) {
-    //             $issueData = $res->issue;
-    //             if ($issueData[0]->code === 'duplicate') {
-    //                 if ($dtcheck) {
-    //                     $dtcheck->flag = 3;
-    //                     $dtcheck->save();
-    //                 }
-    //             } else {
-    //                 if ($dtcheck) {
-    //                     $dtcheck->flag = 0;
-    //                     $dtcheck->save();
-    //                 }
-    //             }
-    //         }
-
-    //         $this->log('Error ' . $statusCode, 'POST', $url, (array)$body, (array)$res, $rsid, $cron_id);
-    //         $result = ['error' => 2, 'success' => 0, 'statusCode' => $statusCode, 'response' => $res->issue[0]->code];
-
-    //         return $result;
-    //     }
-
-    //     $res = $client->sendAsync($request)->wait();
-    //     echo $res->getBody();
-    // }
-
-    public function postData($dataid, $rsid, $body, $cron_id)
+    public function postData($dataid, $rsid, $body, $cronid)
     {
         $access_token = SatusehatToken::orderBy('created_at', 'desc')
             ->where('rsklien_id', '=', $rsid)
@@ -237,6 +164,7 @@ class EncounterService extends OAuth2RsClient
         ];
 
         $url = $this->base_url . '/Encounter';
+
         $request = new Psr7Request('POST', $url, $headers, $body);
 
         try {
@@ -260,7 +188,7 @@ class EncounterService extends OAuth2RsClient
                 $result = ['success' => 1, 'error' => 0, 'id' => $id, 'statusCode' => $statusCode, 'response' => $response];
             }
 
-            $this->log($id, 'POST', $url, (array)$body, (array)$response, $rsid, $cron_id);
+            $this->log($id, 'POST', $url, (array)$body, (array)$response, $rsid, $cronid);
 
             return $result;
         } catch (RequestException $e) { // Use RequestException for Guzzle errors
@@ -289,7 +217,7 @@ class EncounterService extends OAuth2RsClient
                 }
             }
 
-            $this->log('Error ' . $statusCode, 'POST', $url, (array)$body, (array)$res, $rsid, $cron_id);
+            $this->log('Error ' . $statusCode, 'POST', $url, (array)$body, (array)$res, $rsid, $cronid);
             $result = ['error' => 2, 'success' => 0, 'statusCode' => $statusCode, 'response' => $res->issue[0]->code];
 
             return $result;

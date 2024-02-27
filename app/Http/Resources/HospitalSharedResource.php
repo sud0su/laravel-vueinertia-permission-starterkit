@@ -17,6 +17,8 @@ class HospitalSharedResource extends JsonResource
         return [
             'id' => $this->id,
             'clientname' => $this->clientname,
+            'clientid_prod' => $this->clientid_prod,
+            'crontasks' => CronResource::collection($this->whenLoaded('crontasks'))
         ];
     }
 }

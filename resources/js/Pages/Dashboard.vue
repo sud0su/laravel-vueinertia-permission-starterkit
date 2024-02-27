@@ -31,7 +31,7 @@ defineProps(['token', 'clients'])
                     <div v-if="hasRole('admin') && token !== null && token !== ''"
                         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
                         <div v-for="client in clients" :id="client.id">
-                            <Card :address="client.address" :title="client.clientname" :minHeght="64" :services="client.crontask.length"/>
+                            <Card :address="client.address" :title="client.clientname" :minHeght="64" :id="client.id" :services="client.crontask.length"/>
                         </div>
                     </div>
                     <div v-else class="w-full align-center text-center font-semibold">

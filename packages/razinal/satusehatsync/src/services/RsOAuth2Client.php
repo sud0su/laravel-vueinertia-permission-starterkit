@@ -44,6 +44,7 @@ class RsOAuth2Client
         $this->client_secret = $client_secret;
 
         $token = SatusehatToken::orderBy('created_at', 'desc')
+            ->where('rsklien_id', '=', $id)
             ->where('created_at', '>', now()->subMinutes(50))->first();
 
         if ($token) {
@@ -75,7 +76,7 @@ class RsOAuth2Client
                 SatusehatToken::create([
                     'environment' => 'PROD',
                     'token' => $contents->access_token,
-                    'rsklien_id'=> $id,
+                    'rsklien_id' => $id,
                 ]);
 
                 return $contents->access_token;
@@ -88,7 +89,6 @@ class RsOAuth2Client
 
             return $issue_information;
         }
-
     }
 
     public function getAndStoreData($url, $rsid, $resourceType, $cronid)
@@ -175,5 +175,4 @@ class RsOAuth2Client
         $status->user_id = auth()->user() ? auth()->user()->id : 'Cron Job';
         $status->save();
     }
-
 }

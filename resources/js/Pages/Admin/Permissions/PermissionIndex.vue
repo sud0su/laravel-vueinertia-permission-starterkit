@@ -26,7 +26,6 @@ const deletePermission = (id) => {
     });
 }
 
-
 </script>
 
 <template>

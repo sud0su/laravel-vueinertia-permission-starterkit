@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::connection(config('satusehatsimrs.database_connection'))->create(config('satusehatsimrs.getdata_table_name'), function (Blueprint $table) {
             $table->id();
             $table->string('resourceType');
-            $table->json('identifier');
+            $table->string('identifier');
             $table->json('data'); // Add unique constraint
             $table->unsignedBigInteger('cron_id');
             $table->enum('flag', [0, 1, 2, 3])->comment('0 untuk error, 1 untuk belum sync, 2 untuk sudah sync, 3 untuk data sudah ada');

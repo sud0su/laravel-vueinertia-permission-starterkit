@@ -6,6 +6,10 @@ const props = defineProps({
         type: String,
         default: 'Nama RS/Klinik',
     },
+    id: {
+        type: Number,
+        default: null,
+    },
     address: {
         type: String,
         default: 'Alamat',
@@ -42,8 +46,9 @@ const minHeightClass = computed(() => {
         <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">
             {{ address }}
         </p>
-        <div class="items-bottom justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse absolute bottom-0 left-1/2 transform -translate-x-1/2 pb-3">
-            <a href="#"
+        <div
+            class="items-bottom justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4 rtl:space-x-reverse absolute bottom-0 left-1/2 transform -translate-x-1/2 pb-3">
+            <a :href="services > 0 ? route('detail', id) : '#'"
                 class="w-full sm:w-auto focus:ring-4 focus:outline-none focus:ring-gray-300 text-white rounded-lg inline-flex items-center justify-center px-4 py-2.5"
                 :class="services > 0 ? 'bg-green-800 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-700' : 'bg-red-800 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 dark:focus:ring-red-700'">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

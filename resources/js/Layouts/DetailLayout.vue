@@ -4,6 +4,21 @@ import { Link } from '@inertiajs/vue3';
 import SidebarLink from '@/Components/SidebarLink.vue';
 
 const showingNavigationDropdown = ref(false);
+
+
+const props = defineProps({
+    id: {
+        type: Number,
+        required: true,
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    menus: Array
+})
+
+
 </script>
 
 <template>
@@ -12,8 +27,9 @@ const showingNavigationDropdown = ref(false);
             class="ml-[-100%] fixed z-10 top-0 pb-3 px-6 w-full flex flex-col justify-between h-screen border-r bg-white transition duration-300 md:w-4/12 lg:ml-0 lg:w-[25%] xl:w-[20%] 2xl:w-[15%]">
             <div>
                 <div class="-mx-6 px-6 py-4 mx-auto">
-                    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Setting
+                    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
+                            {{ title }}
                         </span>
                     </h1>
                 </div>
@@ -33,26 +49,16 @@ const showingNavigationDropdown = ref(false);
                             <span class="-mr-1 font-medium">Dashboard</span>
                         </SidebarLink>
                     </li>
-                    <li>
-                        <SidebarLink :href="route('crons.index')" :active="route().current('crons.index')">
+                    <li v-for="menu in menus" :key="menu.id">
+                        <SidebarLink :href="route('services', [id,  menu.id, menu.crontitle])"
+                            :active="route().current('services', [id,  menu.id, menu.crontitle])">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                            </svg>
-                            <span class="-mr-1 font-medium">Cron</span>
-                        </SidebarLink>
-                    </li>
-                    <li>
-                        <SidebarLink :href="route('hospitals.index')" :active="route().current('hospitals.index')">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205 3 1m1.5.5-1.5-.5M6.75 7.364V3h-3v18m3-13.636 10.5-3.819" />
+                                    d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
                             </svg>
 
-
-                            <span class="-mr-1 font-medium">RS / Klinik</span>
+                            <span class="-mr-1 font-medium">{{ menu.crontitle }}</span>
                         </SidebarLink>
                     </li>
                 </ul>
@@ -70,10 +76,10 @@ const showingNavigationDropdown = ref(false);
                 </Link>
             </div>
         </aside>
-        <div class="ml-auto mb-6 lg:w-[75%] xl:w-[80%] 2xl:w-[85%]">
+        <div class="ml-auto mb-6 w-[100%] lg:w-[75%] xl:w-[80%] 2xl:w-[85%]">
             <div class="sticky z-10 top-0 h-16 border-b bg-white lg:py-2.5">
                 <div class="px-6 flex items-center justify-between space-x-4 2xl:container">
-                    <h5 hidden class="text-2xl text-gray-600 font-medium lg:block">Dashboard</h5>
+                    <h5 hidden class="text-2xl text-gray-600 font-medium lg:block">Dashboard {{ title }}</h5>
                     <button class="w-12 h-16 -mr-2 border-r lg:hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 my-auto" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -127,7 +133,7 @@ const showingNavigationDropdown = ref(false);
                 </div>
             </div>
 
-            <div class="px-6 pt-6 2xl:container">
+            <div class="px-6 pt-6 container">
                 <slot />
             </div>
         </div>
